@@ -1,0 +1,2 @@
+class KnownError(RuntimeError):
+    pass
