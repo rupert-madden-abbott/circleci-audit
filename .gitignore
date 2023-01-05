@@ -1,0 +1,6 @@
+.pytest_cache/
+*.iml
+.idea/
+venv/
+*.egg-info/
+__pycache__
