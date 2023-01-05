@@ -1,7 +1,25 @@
 [build-system]
-requires = ["setuptools>=62.0.0", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "circleci-audit"
 version = "1.0.0"
+authors = [
+    { name="Rupert Madden-Abbott", email="rupert.madden.abbott@gmail.com" }
+]
+description = "A package for auditing CircleCI"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/rupert-madden-abbott/circleci-audit"
+"Bug Tracker" = "https://github.com/rupert-madden-abbott/circleci-audit/issues"
+
+[project.scripts]
+circleci-audit = "circleci_audit.main:main"
