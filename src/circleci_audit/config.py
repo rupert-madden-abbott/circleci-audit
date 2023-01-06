@@ -11,17 +11,11 @@ _DEFAULT_VCS_SLUG = "gh"
 @dataclass
 class Config:
     token: str
-    organization: str
-    vcs_name: str
-    vcs_slug: str
 
 
 def load_config() -> Config:
     return Config(
-        token=_load_env_var(f"{ENV_VAR_PREFIX}TOKEN"),
-        organization=_load_env_var(f"{ENV_VAR_PREFIX}ORGANIZATION"),
-        vcs_name=_load_env_var(f"{ENV_VAR_PREFIX}VCS_NAME", _DEFAULT_VCS_NAME),
-        vcs_slug=_load_env_var(f"{ENV_VAR_PREFIX}VCS_SLUG", _DEFAULT_VCS_SLUG),
+        token=_load_env_var(f"{ENV_VAR_PREFIX}TOKEN")
     )
 
 
