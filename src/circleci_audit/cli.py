@@ -2,7 +2,7 @@ from typing import Optional, Iterable
 
 from circleci_audit.circleci import CircleCiClient, HttpError
 from circleci_audit.config import load_config
-from circleci_audit.contexts import ContextClient
+from circleci_audit.contexts import ContextClient, Context
 from circleci_audit.known_error import KnownError
 from circleci_audit.organizations import OrganizationClient
 from circleci_audit.repositories import RepositoryClient, Repository
@@ -36,29 +36,16 @@ def list_repositories_vars(org: Optional[str], repo: Optional[str]):
 
     if org is None:
         for repository in _get_repositories(org_client, repo_client):
-            for env_var in _get_vars(repo_client, repository):
+            for env_var in _get_repo_vars(repo_client, repository):
                 print(f"{repository.owner} {repository.name} {env_var}")
     elif repo is None:
         for repository in _get_org_repositories(org_client, repo_client, org):
-            for env_var in _get_vars(repo_client, repository):
+            for env_var in _get_repo_vars(repo_client, repository):
                 print(f"{repository.name} {env_var}")
     else:
         organization = _get_organization(org_client, org)
-        for env_var in _get_vars(repo_client, Repository(repo, None, org, organization.vcs_type)):
+        for env_var in _get_repo_vars(repo_client, Repository(repo, None, org, organization.vcs_type)):
             print(f"{env_var}")
-
-
-def _get_vars(repo_client: RepositoryClient, repository: Repository) -> Iterable[str]:
-    repositories = repo_client.get_vars(repository)
-    while True:
-        try:
-            yield next(repositories)
-        except StopIteration:
-            break
-        except HttpError as ex:
-            if ex.response.status == 404:
-                return []
-            raise
 
 
 def list_contexts(org_name: Optional[str]):
@@ -67,15 +54,33 @@ def list_contexts(org_name: Optional[str]):
     context_client = _get_contexts_client(config)
 
     if org_name is not None:
-        organization = _get_organization(org_client, org_name)
-        for context in context_client.get_contexts(organization.id):
+        for context in _get_org_contexts(org_client, context_client, org_name):
             print(f"{context.name}")
     else:
-        organizations = org_client.get_organizations()
-        for organization in organizations:
-            if organization.id is not None:
-                for context in context_client.get_contexts(organization.id):
-                    print(f"{organization.name} {context.name}")
+        for context in _get_contexts(org_client, context_client):
+            print(f"{context.owner} {context.name}")
+
+
+def list_context_vars(org: Optional[str], context: Optional[str]):
+    config = load_config()
+    org_client = _get_organizations_client(config)
+    context_client = _get_contexts_client(config)
+
+    if org is None:
+        for context in _get_contexts(org_client, context_client):
+            for env_var in context_client.get_vars(context):
+                print(f"{context.owner} {context.name} {env_var}")
+    elif context is None:
+        for context in _get_org_contexts(org_client, context_client, org):
+            for env_var in context_client.get_vars(context):
+                print(f"{context.name} {env_var}")
+    else:
+        organization = _get_organization(org_client, org)
+        context = context_client.get_context(organization, context)
+        if context is None:
+            raise KnownError(f"No context found with name {context}")
+        for env_var in context_client.get_vars(context):
+            print(f"{env_var}")
 
 
 def _get_contexts_client(config) -> ContextClient:
@@ -101,6 +106,23 @@ def _get_repositories(org_client: OrganizationClient, repo_client: RepositoryCli
             yield repository
 
 
+def _get_contexts(org_client: OrganizationClient, context_client: ContextClient) -> Iterable[Context]:
+    organizations = org_client.get_organizations()
+    for organization in organizations:
+        if organization.id is not None:
+            for context in context_client.get_contexts(organization):
+                yield context
+
+
+def _get_org_contexts(
+        org_client: OrganizationClient,
+        context_client: ContextClient,
+        org: str
+) -> Iterable[Context]:
+    organization = _get_organization(org_client, org)
+    return context_client.get_contexts(organization)
+
+
 def _get_org_repositories(
         org_client: OrganizationClient,
         repo_client: RepositoryClient,
@@ -115,3 +137,16 @@ def _get_organization(org_client: OrganizationClient, org: str):
     if organization is None:
         raise KnownError(f"No organisation found with name {org}")
     return organization
+
+
+def _get_repo_vars(repo_client: RepositoryClient, repository: Repository) -> Iterable[str]:
+    env_vars = repo_client.get_vars(repository)
+    while True:
+        try:
+            yield next(env_vars)
+        except StopIteration:
+            break
+        except HttpError as ex:
+            if ex.response.status == 404:
+                return []
+            raise

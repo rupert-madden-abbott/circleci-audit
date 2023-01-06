@@ -79,7 +79,9 @@ env-1
 env-2
 ```
 
-### List Contexts
+### Contexts
+
+#### List
 
 For all organizations:
 
@@ -95,4 +97,30 @@ For a specific organization:
 $ circleci-audit contexts --org=org-1
 example
 another-example
+```
+
+#### List Contexts' Environment Variables
+
+For all organizations and contexts:
+
+```shell
+$ circleci-audit contexts vars
+org-1 context-1 env-1
+org-2 context-2 env-2
+```
+
+For all contexts in a specific organization:
+
+```shell
+$ circleci-audit repos vars --org=org-1
+context-1 env-1
+context-2 env-2
+```
+
+For a specific context:
+
+```shell
+$ circleci-audit repos vars --org=org-1 --context=context-1
+env-1
+env-2
 ```

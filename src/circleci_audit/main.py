@@ -51,6 +51,15 @@ def _add_contexts_parser(sub_parsers):
     parser.add_argument("--org", help="The name of an organization")
     parser.set_defaults(func=lambda a: cli.list_contexts(a.org))
 
+    sub_parsers = parser.add_subparsers(dest="contexts_command", required=False)
+
+    vars_parser = sub_parsers.add_parser("vars")
+    vars_parser.add_argument("--org", dest="vars_org", help="The name of an organization")
+    vars_parser.add_argument("--context", help="The name of a context")
+    vars_parser.set_defaults(func=lambda a: cli.list_context_vars(
+        a.org if a.vars_org is None else a.vars_org,
+        a.context
+    ))
 
 if __name__ == "__main__":
     main()
