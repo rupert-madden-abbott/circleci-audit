@@ -23,7 +23,9 @@ $ circleci-audit --help
 
 ## Commands
 
-### List Organizations
+### Organizations
+
+#### List Organizations
 
 ```shell
 $ circleci-audit orgs
@@ -31,7 +33,9 @@ org-1 github
 org-2 bitbucket
 ```
 
-### List Repositories
+### Repositories
+
+#### List Repositories
 
 For all organizations:
 
@@ -47,6 +51,32 @@ For a specific organization:
 $ circleci-audit repos --org=org-1
 example https://github.com/your-org/example
 another-example https://github.com/your-org/another-example
+```
+
+#### List Repositories' Environment Variables
+
+For all organizations and repositories:
+
+```shell
+$ circleci-audit repos vars
+org-1 repo-1 env-1
+org-2 repo-2 env-2
+```
+
+For all repositories in a specific organization:
+
+```shell
+$ circleci-audit repos vars --org=org-1
+repo-1 env-1
+repo-2 env-2
+```
+
+For a specific repository:
+
+```shell
+$ circleci-audit repos vars --org=org-1 --repo=repo-1
+env-1
+env-2
 ```
 
 ### List Contexts
