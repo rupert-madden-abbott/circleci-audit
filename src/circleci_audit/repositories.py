@@ -48,6 +48,20 @@ class RepositoryClient:
             keys.append(Key("ssh-key", ssh_key["fingerprint"]))
         return keys
 
+    def is_configured_with_jira(self, repository: Repository) -> bool:
+        settings = self._get_settings(repository)
+        jira = settings.get("jira")
+
+        if jira is None:
+            return False
+
+        lifecycle = jira.get("lifecycle")
+
+        if lifecycle == "installed":
+            return True
+
+        raise RuntimeError(f"Unknown lifecycle {lifecycle}")
+
     def _get_settings(self, repo: Repository):
         return self.client.get(
             f"https://circleci.com/api/v1.1/project/{repo.vcs_type}/{repo.owner}/{repo.name}/settings")

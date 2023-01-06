@@ -53,6 +53,12 @@ def _add_repos_parser(sub_parsers):
         a.repo
     ))
 
+    jira_parser = sub_parsers.add_parser("jira")
+    jira_parser.add_argument("--org", dest="jira_org", help="The name of an organization")
+    jira_parser.set_defaults(func=lambda a: cli.list_repositories_jira(
+        a.org if a.jira_org is None else a.jira_org
+    ))
+
 
 def _add_contexts_parser(sub_parsers):
     parser = sub_parsers.add_parser("contexts")

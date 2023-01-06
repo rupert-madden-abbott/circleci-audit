@@ -67,6 +67,21 @@ def list_repositories_keys(org: Optional[str], repo: Optional[str]):
             print(f"{key.type} {key.fingerprint}")
 
 
+def list_repositories_jira(org: Optional[str]):
+    config = load_config()
+    org_client = _get_organizations_client(config)
+    repo_client = _get_repository_client(config)
+
+    if org is None:
+        for repository in _get_repositories(org_client, repo_client):
+            if _repo_is_configured_with_jira(repo_client, repository):
+                print(f"{repository.owner} {repository.name}")
+    else:
+        for repository in _get_org_repositories(org_client, repo_client, org):
+            if _repo_is_configured_with_jira(repo_client, repository):
+                print(f"{repository.name}")
+
+
 def list_contexts(org_name: Optional[str]):
     config = load_config()
     org_client = _get_organizations_client(config)
@@ -177,4 +192,13 @@ def _get_repo_keys(repo_client: RepositoryClient, repository: Repository) -> Lis
     except HttpError as ex:
         if ex.response.status == 404:
             return []
+        raise
+
+
+def _repo_is_configured_with_jira(repo_client: RepositoryClient, repository: Repository) -> bool:
+    try:
+        return repo_client.is_configured_with_jira(repository)
+    except HttpError as ex:
+        if ex.response.status == 404:
+            return False
         raise

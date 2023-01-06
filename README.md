@@ -105,6 +105,26 @@ github-deploy-key key:finger:print
 ssh-key key:finger:print
 ```
 
+#### List Repositories' Configured With Jira
+
+List all repositories that have been configured with a secret token to authenticate to Jira.
+
+For all organizations and repositories:
+
+```shell
+$ circleci-audit repos jira
+org-1 repo-1
+org-2 repo-2
+```
+
+For all repositories in a specific organization:
+
+```shell
+$ circleci-audit repos keys --org=org-1
+repo-1
+repo-2
+```
+
 ### Contexts
 
 #### List
