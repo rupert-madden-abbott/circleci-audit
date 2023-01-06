@@ -45,6 +45,14 @@ def _add_repos_parser(sub_parsers):
         a.repo
     ))
 
+    keys_parser = sub_parsers.add_parser("keys")
+    keys_parser.add_argument("--org", dest="keys_org", help="The name of an organization")
+    keys_parser.add_argument("--repo", help="The name of a repo")
+    keys_parser.set_defaults(func=lambda a: cli.list_repositories_keys(
+        a.org if a.keys_org is None else a.keys_org,
+        a.repo
+    ))
+
 
 def _add_contexts_parser(sub_parsers):
     parser = sub_parsers.add_parser("contexts")

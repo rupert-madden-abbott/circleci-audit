@@ -1,11 +1,11 @@
-from typing import Optional, Iterable
+from typing import Optional, Iterable, List
 
 from circleci_audit.circleci import CircleCiClient, HttpError
 from circleci_audit.config import load_config
 from circleci_audit.contexts import ContextClient, Context
 from circleci_audit.known_error import KnownError
 from circleci_audit.organizations import OrganizationClient
-from circleci_audit.repositories import RepositoryClient, Repository
+from circleci_audit.repositories import RepositoryClient, Repository, Key
 
 
 def list_organizations():
@@ -46,6 +46,25 @@ def list_repositories_vars(org: Optional[str], repo: Optional[str]):
         organization = _get_organization(org_client, org)
         for env_var in _get_repo_vars(repo_client, Repository(repo, None, org, organization.vcs_type)):
             print(f"{env_var}")
+
+
+def list_repositories_keys(org: Optional[str], repo: Optional[str]):
+    config = load_config()
+    org_client = _get_organizations_client(config)
+    repo_client = _get_repository_client(config)
+
+    if org is None:
+        for repository in _get_repositories(org_client, repo_client):
+            for key in _get_repo_keys(repo_client, repository):
+                print(f"{repository.owner} {repository.name} {key.type} {key.fingerprint}")
+    elif repo is None:
+        for repository in _get_org_repositories(org_client, repo_client, org):
+            for key in _get_repo_keys(repo_client, repository):
+                print(f"{repository.name} {key.type} {key.fingerprint}")
+    else:
+        organization = _get_organization(org_client, org)
+        for key in _get_repo_keys(repo_client, Repository(repo, None, org, organization.vcs_type)):
+            print(f"{key.type} {key.fingerprint}")
 
 
 def list_contexts(org_name: Optional[str]):
@@ -150,3 +169,12 @@ def _get_repo_vars(repo_client: RepositoryClient, repository: Repository) -> Ite
             if ex.response.status == 404:
                 return []
             raise
+
+
+def _get_repo_keys(repo_client: RepositoryClient, repository: Repository) -> List[Key]:
+    try:
+        return repo_client.get_keys(repository)
+    except HttpError as ex:
+        if ex.response.status == 404:
+            return []
+        raise

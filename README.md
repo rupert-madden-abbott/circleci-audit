@@ -79,6 +79,32 @@ env-1
 env-2
 ```
 
+#### List Repositories' SSH Keys
+
+For all organizations and repositories:
+
+```shell
+$ circleci-audit repos keys
+org-1 repo-1 github-deploy-key key:finger:print
+org-2 repo-2 ssh-key key:finger:print
+```
+
+For all repositories in a specific organization:
+
+```shell
+$ circleci-audit repos keys --org=org-1
+repo-1 github-deploy-key key:finger:print
+repo-2 ssh-key key:finger:print
+```
+
+For a specific repository:
+
+```shell
+$ circleci-audit repos keys --org=org-1 --repo=repo-1
+github-deploy-key key:finger:print
+ssh-key key:finger:print
+```
+
 ### Contexts
 
 #### List
