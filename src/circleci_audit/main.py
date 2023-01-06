@@ -32,13 +32,13 @@ def _add_orgs_parser(sub_parsers):
 
 def _add_repos_parser(sub_parsers):
     parser = sub_parsers.add_parser("repos")
-    parser.add_argument("org", help="The name of an organization", type=str, nargs="?")
+    parser.add_argument("--org", help="The name of an organization")
     parser.set_defaults(func=lambda a: cli.list_repositories(a.org))
 
 
 def _add_contexts_parser(sub_parsers):
     parser = sub_parsers.add_parser("contexts")
-    parser.add_argument("org", help="The name of an organization", type=str, nargs="?")
+    parser.add_argument("--org", help="The name of an organization")
     parser.set_defaults(func=lambda a: cli.list_contexts(a.org))
 
 

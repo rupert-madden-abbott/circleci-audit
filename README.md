@@ -44,7 +44,7 @@ org-2 another-example https://github.com/your-org/another-example
 For a specific organization:
 
 ```shell
-$ circleci-audit repos org-1
+$ circleci-audit repos --org=org-1
 example https://github.com/your-org/example
 another-example https://github.com/your-org/another-example
 ```
@@ -62,7 +62,7 @@ org-2 another-example
 For a specific organization:
 
 ```shell
-$ circleci-audit contexts org-1
+$ circleci-audit contexts --org=org-1
 example
 another-example
 ```
