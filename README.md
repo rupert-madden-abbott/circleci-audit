@@ -1,5 +1,9 @@
 # CircleCI Audit
 
+This tool is intended to help you audit any secrets that you may have configured in CircleCI.
+
+It was developed specifically to assist with the recommendations of [this security alert](https://circleci.com/blog/january-4-2023-security-alert/).
+
 ## Pre-requisites:
 
 * Python 3.7+
