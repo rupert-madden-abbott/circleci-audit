@@ -30,5 +30,5 @@ class RepositoryClient:
         return Repository(
             name=item["name"],
             url=item["vcs_url"],
-            owner=item["owner"].get["name"]
+            owner=item["owner"]["name"]
         )
